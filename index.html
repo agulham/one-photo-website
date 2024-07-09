@@ -24,5 +24,30 @@
 </head>
 <body>
   <img src="wappa.jpg" alt="A Beautiful Scene">
+    <script>
+    // Generate the list of valid tokens (100 to 200)
+    const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
+
+    // Function to get query parameter by name
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Check for the token
+    const token = getQueryParam('token');
+
+    // Verify the token
+    if (validTokens.includes(token)) {
+      // Show the content if the token is valid
+      document.body.style.display = 'flex';
+    } else {
+      // Redirect or show a message if the token is invalid
+      document.body.innerHTML = '<h1>KAFIR ALERT! ACCESS RESTRICTED</h1>';
+      document.body.style.display = 'flex';
+      document.body.style.color = 'white';
+      document.body.style.fontFamily = 'Arial, sans-serif';
+    }
+  </script> 
 </body>
 </html>
