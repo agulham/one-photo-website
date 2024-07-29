@@ -88,6 +88,7 @@
     const token = getQueryParam('token');
 
     // Debugging logs
+    console.log('JavaScript loaded');
     console.log('Token:', token);
     console.log('Valid Tokens:', validTokens);
 
@@ -95,13 +96,12 @@
     if (validTokens.includes(token)) {
       console.log('Token is valid. Displaying content.');
       document.body.style.display = 'flex';
+      document.querySelector('.error-message').style.display = 'none';
     } else {
       console.log('Invalid token. Displaying error message.');
       document.querySelector('.error-message').style.display = 'block';
-      document.body.style.display = 'flex';
       document.querySelector('img').style.display = 'none'; // Hide the image
     }
   </script>
 </body>
 </html>
-
