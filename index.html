@@ -10,7 +10,7 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      display: flex;
+      display: none; /* Initially hide the body */
       justify-content: center;
       align-items: center;
       background-color: #000; /* Optional: To handle any background color */
@@ -20,11 +20,60 @@
       height: 100%;
       object-fit: cover; /* This makes sure the image covers the entire screen */
     }
+    .error-message {
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    .error-message h1 {
+      font-size: 2em;
+      margin: 0;
+    }
+    .error-message p {
+      font-size: 1em;
+      margin: 0.5em 0;
+    }
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      margin-top: 1em;
+    }
+    .social-icons a {
+      margin: 0 1em;
+    }
+    .social-icons img {
+      width: 40px;
+      height: 40px;
+    }
+    @media (max-width: 600px) {
+      .error-message h1 {
+        font-size: 1.5em;
+      }
+      .error-message p {
+        font-size: 0.9em;
+      }
+      .social-icons img {
+        width: 30px;
+        height: 30px;
+      }
+    }
   </style>
 </head>
 <body>
-  <img src="wappa.jpg" alt="A Beautiful Scene">
-    <script>
+  <img id="mainImage" src="wappa.jpg" alt="A Beautiful Scene">
+  <div class="error-message">
+    <h1>ACCESS RESTRICTED</h1>
+    <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
+    <div class="social-icons">
+      <a href="https://www.instagram.com/dhikrband" target="_blank">
+        <img src="instagram-icon.png" alt="Instagram">
+      </a>
+      <a href="https://www.tiktok.com/@dhikrband" target="_blank">
+        <img src="tiktok-icon.png" alt="TikTok">
+      </a>
+    </div>
+  </div>
+  <script>
     // Generate the list of valid tokens (100 to 200)
     const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
 
@@ -43,11 +92,10 @@
       document.body.style.display = 'flex';
     } else {
       // Redirect or show a message if the token is invalid
-      document.body.innerHTML = '<h1>KAFIR ALERT! ACCESS RESTRICTED</h1>';
+      document.querySelector('.error-message').style.display = 'block';
       document.body.style.display = 'flex';
-      document.body.style.color = 'white';
-      document.body.style.fontFamily = 'Arial, sans-serif';
     }
-  </script> 
+  </script>
 </body>
 </html>
+
