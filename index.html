@@ -87,12 +87,18 @@
     // Check for the token
     const token = getQueryParam('token');
 
+    // Debugging logs
+    console.log('Token:', token);
+    console.log('Valid tokens:', validTokens);
+
     // Verify the token
     if (validTokens.includes(token)) {
       // Show the content if the token is valid
+      console.log('Valid token, displaying content.');
       document.body.style.display = 'flex';
     } else {
       // Show the error message if the token is invalid
+      console.log('Invalid token, displaying error message.');
       document.querySelector('.error-message').style.display = 'block';
       document.body.style.display = 'flex';
     }
