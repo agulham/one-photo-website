@@ -10,21 +10,35 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      display: flex; /* Use flex layout to center content */
+      display: flex;
       justify-content: center;
       align-items: center;
       background-color: #000;
+      overflow: hidden; /* Prevent scrolling */
     }
     #content {
-      color: white;
-      text-align: center;
+      position: absolute; /* Use absolute positioning */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: none; /* Initially hide the content */
+      overflow: hidden; /* Prevent scrolling */
+    }
+    #content img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Ensure the image covers the entire area */
     }
     .error-message {
       color: white;
       text-align: center;
       font-family: Arial, sans-serif;
-      display: none;
+      display: none; /* Initially hide the error message */
+      position: absolute; /* Use absolute positioning */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%); /* Center the message */
     }
     .error-message h1 {
       font-size: 2em;
@@ -99,8 +113,8 @@
       document.querySelector('.error-message').style.display = 'none';
     } else {
       console.log('Invalid token or no token. Displaying message.');
-      document.querySelector('.error-message').style.display = 'block';
       document.getElementById('content').style.display = 'none';
+      document.querySelector('.error-message').style.display = 'flex';
     }
   </script>
 </body>
