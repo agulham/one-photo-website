@@ -21,6 +21,7 @@
       object-fit: cover; /* This makes sure the image covers the entire screen */
     }
     .error-message {
+      display: none; /* Initially hide the error message */
       color: white;
       text-align: center;
       font-family: Arial, sans-serif;
@@ -91,11 +92,10 @@
       // Show the content if the token is valid
       document.body.style.display = 'flex';
     } else {
-      // Redirect or show a message if the token is invalid
+      // Show the error message if the token is invalid
       document.querySelector('.error-message').style.display = 'block';
       document.body.style.display = 'flex';
     }
   </script>
 </body>
 </html>
-
