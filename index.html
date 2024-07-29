@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DhikrBand</title>
+  <title>Debug Test</title>
   <style>
     body, html {
       margin: 0;
@@ -15,68 +15,17 @@
       align-items: center;
       background-color: #000;
     }
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .error-message {
+    #content {
       color: white;
       text-align: center;
-      font-family: Arial, sans-serif;
-      display: none;
-    }
-    .error-message h1 {
-      font-size: 2em;
-      margin: 0;
-    }
-    .error-message p {
-      font-size: 1em;
-      margin: 0.5em 0;
-    }
-    .social-icons {
-      display: flex;
-      justify-content: center;
-      margin-top: 1em;
-    }
-    .social-icons a {
-      margin: 0 1em;
-    }
-    .social-icons img {
-      width: 40px;
-      height: 40px;
-    }
-    @media (max-width: 600px) {
-      .error-message h1 {
-        font-size: 1.5em;
-      }
-      .error-message p {
-        font-size: 0.9em;
-      }
-      .social-icons img {
-        width: 30px;
-        height: 30px;
-      }
     }
   </style>
 </head>
 <body>
-  <img id="mainImage" src="wappa.jpg" alt="A Beautiful Scene">
-  <div class="error-message">
-    <h1>ACCESS RESTRICTED</h1>
-    <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
-    <div class="social-icons">
-      <a href="https://www.instagram.com/dhikrband" target="_blank">
-        <img src="instagram-icon.png" alt="Instagram">
-      </a>
-      <a href="https://www.tiktok.com/@dhikrband" target="_blank">
-        <img src="tiktok-icon.png" alt="TikTok">
-      </a>
-    </div>
-  </div>
+  <div id="content">Content is hidden by default.</div>
   <script>
-    // Generate the list of valid tokens (100 to 200)
-    const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
+    // Debugging
+    console.log('JavaScript loaded');
 
     // Function to get query parameter by name
     function getQueryParam(name) {
@@ -84,23 +33,17 @@
       return urlParams.get(name);
     }
 
-    // Check for the token
+    // Check for a specific token (test with token=123)
     const token = getQueryParam('token');
-
-    // Debugging logs
-    console.log('JavaScript loaded');
     console.log('Token:', token);
-    console.log('Valid Tokens:', validTokens);
 
-    // Verify the token
-    if (validTokens.includes(token)) {
+    if (token === '123') { // Simplified for debugging
       console.log('Token is valid. Displaying content.');
       document.body.style.display = 'flex';
-      document.querySelector('.error-message').style.display = 'none';
+      document.getElementById('content').textContent = 'Content is now visible!';
     } else {
-      console.log('Invalid token. Displaying error message.');
-      document.querySelector('.error-message').style.display = 'block';
-      document.querySelector('img').style.display = 'none'; // Hide the image
+      console.log('Invalid token or no token. Displaying message.');
+      document.body.style.display = 'flex';
     }
   </script>
 </body>
