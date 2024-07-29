@@ -10,49 +10,28 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      display: flex; /* Use flex layout to center content */
+      display: flex;
       justify-content: center;
       align-items: center;
       background-color: #000;
-      overflow: hidden; /* Prevent scrolling */
+      overflow: hidden;
     }
     #content {
-      color: white;
-      text-align: center;
-      display: none; /* Initially hide the content */
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
-    #content img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain; /* Ensure the image fits within the container */
+      display: none;
     }
     .error-message {
       color: white;
       text-align: center;
       font-family: Arial, sans-serif;
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 90%;
-      box-sizing: border-box;
-      padding: 1em;
     }
     .error-message h1 {
-      font-size: 2.5em;
+      font-size: 2em;
       margin: 0;
     }
-    .error-message .subtitle {
+    .error-message h2 {
       color: red;
       font-size: 1.5em;
-      font-weight: bold;
-      margin-top: 0.5em;
+      margin: 0;
     }
     .error-message p {
       font-size: 1em;
@@ -60,11 +39,12 @@
     }
     .social-icons {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       margin-top: 1em;
     }
     .social-icons a {
-      margin: 0 1em;
+      margin: 0.5em;
     }
     .social-icons img {
       width: 40px;
@@ -72,10 +52,7 @@
     }
     @media (max-width: 600px) {
       .error-message h1 {
-        font-size: 2em;
-      }
-      .error-message .subtitle {
-        font-size: 1.2em;
+        font-size: 1.5em;
       }
       .error-message p {
         font-size: 0.9em;
@@ -85,15 +62,32 @@
         height: 30px;
       }
     }
+    .audio-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: white;
+      font-size: 1.5em;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
   </style>
 </head>
 <body>
   <div id="content">
-    <img src="wappa.jpg" alt="A Beautiful Scene">
+    <img src="wappa.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
+    <audio id="backgroundAudio" loop>
+      <source src="015004.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <button class="audio-button" onclick="toggleAudio()">▶️</button>
   </div>
-  <div class="error-message">
+  <div class="error-message" id="error">
     <h1>ACCESS RESTRICTED</h1>
-    <div class="subtitle">SCAN NFC CHIP ON BRACELET TO ENTER</div>
+    <h2>SCAN NFC CHIP ON BRACELET TO ENTER</h2>
     <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
     <div class="social-icons">
       <a href="https://www.instagram.com/dhikrband" target="_blank">
@@ -129,6 +123,19 @@
       console.log('Invalid token or no token. Displaying message.');
       document.querySelector('.error-message').style.display = 'block';
       document.getElementById('content').style.display = 'none';
+    }
+
+    // Function to toggle audio playback
+    function toggleAudio() {
+      const audio = document.getElementById('backgroundAudio');
+      const button = document.querySelector('.audio-button');
+      if (audio.paused) {
+        audio.play();
+        button.textContent = '⏸️';
+      } else {
+        audio.pause();
+        button.textContent = '▶️';
+      }
     }
   </script>
 </body>
