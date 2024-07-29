@@ -10,7 +10,7 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      display: none; /* Initially hide the body */
+      display: flex;
       justify-content: center;
       align-items: center;
       background-color: #000; /* Optional: To handle any background color */
@@ -20,78 +20,11 @@
       height: 100%;
       object-fit: cover; /* This makes sure the image covers the entire screen */
     }
-    .error-message {
-      display: none; /* Initially hide the error message */
-      color: white;
-      text-align: center;
-      font-family: Arial, sans-serif;
-    }
-    .error-message h1 {
-      font-size: 2em;
-      margin: 0;
-    }
-    .error-message p {
-      font-size: 1em;
-      margin: 0.5em 0;
-    }
-    .social-icons {
-      display: flex;
-      justify-content: center;
-      margin-top: 1em;
-    }
-    .social-icons a {
-      margin: 0 1em;
-    }
-    .social-icons img {
-      width: 40px;
-      height: 40px;
-    }
-    @media (max-width: 600px) {
-      .error-message h1 {
-        font-size: 1.5em;
-      }
-      .error-message p {
-        font-size: 0.9em;
-      }
-      .social-icons img {
-        width: 30px;
-        height: 30px;
-      }
-    }
-    /* Fallback content styling */
-    .fallback-content {
-      color: white;
-      text-align: center;
-      font-family: Arial, sans-serif;
-    }
   </style>
 </head>
 <body>
-  <div class="fallback-content">
-    <h1>Loading...</h1>
-  </div>
-  <img id="mainImage" src="wappa.jpg" alt="A Beautiful Scene" onerror="handleImageError()">
-  <div class="error-message">
-    <h1>ACCESS RESTRICTED</h1>
-    <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
-    <div class="social-icons">
-      <a href="https://www.instagram.com/dhikrband" target="_blank">
-        <img src="instagram-icon.png" alt="Instagram">
-      </a>
-      <a href="https://www.tiktok.com/@dhikrband" target="_blank">
-        <img src="tiktok-icon.png" alt="TikTok">
-      </a>
-    </div>
-  </div>
-  <script>
-    // Function to handle image load error
-    function handleImageError() {
-      alert("Image not found: Make sure the image path is correct.");
-      // Show fallback content on image load error
-      document.querySelector('.fallback-content').textContent = "Image not found. Please check the image path.";
-      document.body.style.display = 'block';
-    }
-
+  <img src="wappa.jpg" alt="A Beautiful Scene">
+    <script>
     // Generate the list of valid tokens (100 to 200)
     const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
 
@@ -104,26 +37,17 @@
     // Check for the token
     const token = getQueryParam('token');
 
-    // Debugging logs
-    console.log('Token:', token);
-    console.log('Valid tokens:', validTokens);
-
     // Verify the token
     if (validTokens.includes(token)) {
       // Show the content if the token is valid
-      console.log('Valid token, displaying content.');
-      document.querySelector('.fallback-content').style.display = 'none'; // Hide fallback content
       document.body.style.display = 'flex';
     } else {
-      // Show the error message if the token is invalid
-      console.log('Invalid token, displaying error message.');
-      document.querySelector('.error-message').style.display = 'block';
-      document.querySelector('.fallback-content').style.display = 'none'; // Hide fallback content
+      // Redirect or show a message if the token is invalid
+      document.body.innerHTML = '<h1>KAFIR ALERT! ACCESS RESTRICTED</h1>';
       document.body.style.display = 'flex';
+      document.body.style.color = 'white';
+      document.body.style.fontFamily = 'Arial, sans-serif';
     }
-
-    // Additional debug for body style
-    console.log('Body display style:', document.body.style.display);
-  </script>
+  </script> 
 </body>
 </html>
