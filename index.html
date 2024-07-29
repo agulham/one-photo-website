@@ -10,7 +10,7 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      display: flex;
+      display: none; /* Initially hide the body */
       justify-content: center;
       align-items: center;
       background-color: #000;
@@ -23,6 +23,31 @@
   </style>
 </head>
 <body>
-  <img src="wappa.jpg" alt="A Beautiful Scene">
+  <img id="mainImage" src="wappa.jpg" alt="A Beautiful Scene">
+  <script>
+    console.log('JavaScript loaded'); // Check if JavaScript is loaded
+
+    // Function to get query parameter by name
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Check for the token
+    const token = getQueryParam('token');
+
+    // Debugging logs
+    console.log('Token:', token);
+
+    // Verify the token
+    if (token === '100') { // Simplified for debugging
+      console.log('Token is valid. Displaying content.');
+      document.body.style.display = 'flex';
+    } else {
+      console.log('Invalid token. Displaying error message.');
+      document.body.innerHTML = '<h1 style="color: white;">ACCESS RESTRICTED</h1>';
+      document.body.style.display = 'flex';
+    }
+  </script>
 </body>
 </html>
