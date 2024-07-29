@@ -10,7 +10,7 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      display: none; /* Initially hide the body */
+      display: flex;
       justify-content: center;
       align-items: center;
       background-color: #000;
@@ -20,85 +20,9 @@
       height: 100%;
       object-fit: cover;
     }
-    .error-message {
-      color: white;
-      text-align: center;
-      font-family: Arial, sans-serif;
-      display: none;
-    }
-    .error-message h1 {
-      font-size: 2em;
-      margin: 0;
-    }
-    .error-message p {
-      font-size: 1em;
-      margin: 0.5em 0;
-    }
-    .social-icons {
-      display: flex;
-      justify-content: center;
-      margin-top: 1em;
-    }
-    .social-icons a {
-      margin: 0 1em;
-    }
-    .social-icons img {
-      width: 40px;
-      height: 40px;
-    }
-    @media (max-width: 600px) {
-      .error-message h1 {
-        font-size: 1.5em;
-      }
-      .error-message p {
-        font-size: 0.9em;
-      }
-      .social-icons img {
-        width: 30px;
-        height: 30px;
-      }
-    }
   </style>
 </head>
 <body>
-  <img id="mainImage" src="wappa.jpg" alt="A Beautiful Scene">
-  <div class="error-message">
-    <h1>ACCESS RESTRICTED</h1>
-    <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
-    <div class="social-icons">
-      <a href="https://www.instagram.com/dhikrband" target="_blank">
-        <img src="instagram-icon.png" alt="Instagram">
-      </a>
-      <a href="https://www.tiktok.com/@dhikrband" target="_blank">
-        <img src="tiktok-icon.png" alt="TikTok">
-      </a>
-    </div>
-  </div>
-  <script>
-    // Function to get query parameter by name
-    function getQueryParam(name) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
-
-    // Check for the token
-    const token = getQueryParam('token');
-
-    // Debugging logs
-    console.log('Token:', token);
-
-    // Verify the token
-    if (token === '100') { // Simplified for debugging
-      // Show the content if the token is valid
-      console.log('Token is valid. Displaying content.');
-      document.body.style.display = 'flex';
-    } else {
-      // Show the error message if the token is invalid
-      console.log('Invalid token. Displaying error message.');
-      document.querySelector('.error-message').style.display = 'block';
-      document.body.style.display = 'flex';
-      document.querySelector('img').style.display = 'none'; // Hide the image
-    }
-  </script>
+  <img src="wappa.jpg" alt="A Beautiful Scene">
 </body>
 </html>
