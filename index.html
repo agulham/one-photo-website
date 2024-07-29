@@ -90,9 +90,11 @@
     // Verify the token
     if (token === '100') { // Simplified for debugging
       // Show the content if the token is valid
+      console.log('Token is valid. Displaying content.');
       document.body.style.display = 'flex';
     } else {
       // Show the error message if the token is invalid
+      console.log('Invalid token. Displaying error message.');
       document.querySelector('.error-message').style.display = 'block';
       document.body.style.display = 'flex';
       document.querySelector('img').style.display = 'none'; // Hide the image
