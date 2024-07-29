@@ -10,7 +10,7 @@
       padding: 0;
       height: 100%;
       width: 100%;
-      display: flex;
+      display: flex; /* Use flex layout to center content */
       justify-content: center;
       align-items: center;
       background-color: #000;
@@ -24,7 +24,7 @@
       color: white;
       text-align: center;
       font-family: Arial, sans-serif;
-      display: none; /* Initially hide the error message */
+      display: none;
     }
     .error-message h1 {
       font-size: 2em;
@@ -99,8 +99,8 @@
       document.querySelector('.error-message').style.display = 'none';
     } else {
       console.log('Invalid token or no token. Displaying message.');
-      document.getElementById('content').style.display = 'none'; // Ensure content is hidden
-      document.querySelector('.error-message').style.display = 'flex'; // Show error message
+      document.querySelector('.error-message').style.display = 'block';
+      document.getElementById('content').style.display = 'none';
     }
   </script>
 </body>
