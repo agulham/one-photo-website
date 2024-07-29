@@ -20,12 +20,63 @@
       height: 100%;
       object-fit: cover;
     }
+    .error-message {
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      display: none;
+    }
+    .error-message h1 {
+      font-size: 2em;
+      margin: 0;
+    }
+    .error-message p {
+      font-size: 1em;
+      margin: 0.5em 0;
+    }
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      margin-top: 1em;
+    }
+    .social-icons a {
+      margin: 0 1em;
+    }
+    .social-icons img {
+      width: 40px;
+      height: 40px;
+    }
+    @media (max-width: 600px) {
+      .error-message h1 {
+        font-size: 1.5em;
+      }
+      .error-message p {
+        font-size: 0.9em;
+      }
+      .social-icons img {
+        width: 30px;
+        height: 30px;
+      }
+    }
   </style>
 </head>
 <body>
   <img id="mainImage" src="wappa.jpg" alt="A Beautiful Scene">
+  <div class="error-message">
+    <h1>ACCESS RESTRICTED</h1>
+    <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
+    <div class="social-icons">
+      <a href="https://www.instagram.com/dhikrband" target="_blank">
+        <img src="instagram-icon.png" alt="Instagram">
+      </a>
+      <a href="https://www.tiktok.com/@dhikrband" target="_blank">
+        <img src="tiktok-icon.png" alt="TikTok">
+      </a>
+    </div>
+  </div>
   <script>
-    console.log('JavaScript loaded'); // Check if JavaScript is loaded
+    // Generate the list of valid tokens (100 to 200)
+    const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
 
     // Function to get query parameter by name
     function getQueryParam(name) {
@@ -38,16 +89,19 @@
 
     // Debugging logs
     console.log('Token:', token);
+    console.log('Valid Tokens:', validTokens);
 
     // Verify the token
-    if (token === '100') { // Simplified for debugging
+    if (validTokens.includes(token)) {
       console.log('Token is valid. Displaying content.');
       document.body.style.display = 'flex';
     } else {
       console.log('Invalid token. Displaying error message.');
-      document.body.innerHTML = '<h1 style="color: white;">ACCESS RESTRICTED</h1>';
+      document.querySelector('.error-message').style.display = 'block';
       document.body.style.display = 'flex';
+      document.querySelector('img').style.display = 'none'; // Hide the image
     }
   </script>
 </body>
 </html>
+
