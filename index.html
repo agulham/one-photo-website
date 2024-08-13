@@ -72,9 +72,9 @@
 </head>
 <body>
   <div id="content">
-    <img src="wappa.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
+    <img id="mainImage" src="image1.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
     <audio id="backgroundAudio" loop>
-      <source src="015004.mp3" type="audio/mpeg">
+      <source id="audioSource" src="audio1.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
     <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button" width="56" height="56">
@@ -93,6 +93,57 @@
     </div>
   </div>
   <script>
+    // Array of image filenames (now in PNG format)
+    const images = [
+      'image1.png',
+      'image2.png',
+      'image3.png',
+      'image4.png',
+      'image5.png',
+      'image6.png',
+      'image7.png',
+      'image8.png',
+      'image9.png',
+      'image10.png'
+    ];
+
+    // Array of audio filenames corresponding to the images
+    const audios = [
+      'audio1.mp3',
+      'audio2.mp3',
+      'audio3.mp3',
+      'audio4.mp3',
+      'audio5.mp3',
+      'audio6.mp3',
+      'audio7.mp3',
+      'audio8.mp3',
+      'audio9.mp3',
+      'audio10.mp3'
+    ];
+
+    // Function to get the index of the image and audio to display based on the current date
+    function getMediaIndex() {
+      const now = new Date();
+      const utcHour = now.getUTCHours();
+      const pstHour = utcHour - 8; // PST is UTC-8
+      const dayOffset = pstHour < 3 ? -1 : 0;
+      const today = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
+      return today.getDay(); // Returns a number from 0 (Sunday) to 6 (Saturday)
+    }
+
+    // Set the correct image and audio based on the day
+    function setMedia() {
+      const index = getMediaIndex();
+      const imageName = images[index % images.length];
+      const audioName = audios[index % audios.length];
+      document.getElementById('mainImage').src = imageName;
+      document.getElementById('audioSource').src = audioName;
+      document.getElementById('backgroundAudio').load(); // Reload the audio element to update the source
+    }
+
+    // Run the setMedia function to display the correct image and audio
+    setMedia();
+
     // Generate the list of valid tokens (100 to 200)
     const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
 
@@ -134,3 +185,4 @@
   </script>
 </body>
 </html>
+
