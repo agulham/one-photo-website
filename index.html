@@ -19,82 +19,28 @@
     #content {
       display: none;
     }
-    .prayer-times {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: white;
-      padding: 10px;
-      border-radius: 5px;
-      font-family: Arial, sans-serif;
-    }
     .audio-button {
       position: absolute;
       bottom: 20px;
       right: 20px;
       cursor: pointer;
     }
-    /* Modal styles */
-    #cityModal {
-      display: none; 
-      position: fixed; 
-      z-index: 1; 
-      left: 0;
-      top: 0;
-      width: 100%; 
-      height: 100%; 
-      overflow: auto; 
-      background-color: rgba(0, 0, 0, 0.8); 
-    }
-    #cityModalContent {
-      background-color: #fff;
-      margin: 15% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 300px;
-      text-align: center;
-    }
-    #cityModalContent input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    #cityModalContent button {
-      padding: 10px 20px;
-      background-color: #000;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
   <div id="content">
-    <img src="image1.png" id="mainImage" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
+    <img src="wappa.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
+    <img id="mainImage" src="image1.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
     <audio id="backgroundAudio" loop>
+      <source src="015004.mp3" type="audio/mpeg">
       <source id="audioSource" src="audio1.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
     <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button" width="56" height="56">
-    <div id="prayerTimes" class="prayer-times"></div>
   </div>
-
-  <!-- City Input Modal -->
-  <div id="cityModal">
-    <div id="cityModalContent">
-      <h2>Enter Your City</h2>
-      <input type="text" id="cityInput" placeholder="Enter city name">
-      <button onclick="saveCity()">Submit</button>
-    </div>
-  </div>
-
+  
   <script>
-    // Array of image filenames (now in PNG format)
+    // Array of image filenames (in PNG format)
     const images = [
       'image1.png',
       'image2.png',
@@ -124,22 +70,49 @@
 
     // Function to get the index of the image and audio to display based on the current date
     function getMediaIndex() {
+      const startDate = new Date('2024-08-01T03:00:00Z'); // The start date (when day 1 starts)
       const now = new Date();
-      const utcHour = now.getUTCHours();
-      const pstHour = utcHour - 8; // PST is UTC-8
-      const dayOffset = pstHour < 3 ? -1 : 0;
-      const today = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
-      return today.getDay(); // Returns a number from 0 (Sunday) to 6 (Saturday)
+      const timeDiff = now.getTime() - startDate.getTime();
+      const daysSinceStart = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Calculate the number of days since the start
+      return daysSinceStart % images.length; // Ensure the index wraps around after 10 days
     }
 
     // Set the correct image and audio based on the day
     function setMedia() {
       const index = getMediaIndex();
-      const imageName = images[index % images.length];
-      const audioName = audios[index % audios.length];
+      const imageName = images[index];
+      const audioName = audios[index];
       document.getElementById('mainImage').src = imageName;
       document.getElementById('audioSource').src = audioName;
       document.getElementById('backgroundAudio').load(); // Reload the audio element to update the source
+    }
+
+    // Run the setMedia function to display the correct image and audio
+    setMedia();
+
+    // Generate the list of valid tokens (100 to 200)
+    const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
+
+    // Function to get query parameter by name
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    // Check for the token
+    const token = getQueryParam('token');
+    console.log('JavaScript loaded');
+    console.log('Token:', token);
+    console.log('Valid Tokens:', validTokens);
+
+    // Verify the token
+    if (validTokens.includes(token)) {
+      console.log('Token is valid. Displaying content.');
+      document.getElementById('content').style.display = 'flex';
+    } else {
+      console.log('Invalid token or no token. Displaying message.');
+      document.querySelector('.error-message').style.display = 'block';
+      document.getElementById('content').style.display = 'none';
     }
 
     // Function to toggle audio playback
@@ -153,67 +126,6 @@
         audio.pause();
         button.src = 'play-button.png'; // Change to play button image
       }
-    }
-
-    // Function to fetch prayer times based on city name
-    function fetchPrayerTimes(city) {
-      const apiURL = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=&method=2`;
-
-      fetch(apiURL)
-        .then(response => response.json())
-        .then(data => {
-          const prayerTimes = data.data.timings;
-          const currentPrayer = getCurrentPrayer(prayerTimes);
-          document.getElementById('prayerTimes').innerHTML = `
-            <strong>${currentPrayer.name}</strong><br>
-            ${currentPrayer.time} - ${city}
-          `;
-        })
-        .catch(error => {
-          console.error('Error fetching prayer times:', error);
-          document.getElementById('prayerTimes').innerHTML = 'Failed to load prayer times.';
-        });
-    }
-
-    // Get the current prayer based on the current time
-    function getCurrentPrayer(prayerTimes) {
-      const now = new Date();
-      const timeNow = now.getHours() * 60 + now.getMinutes();
-
-      const prayers = Object.keys(prayerTimes).map(name => ({
-        name,
-        time: prayerTimes[name],
-        minutes: parseInt(prayerTimes[name].split(':')[0]) * 60 + parseInt(prayerTimes[name].split(':')[1])
-      }));
-
-      const currentPrayer = prayers.find(prayer => timeNow < prayer.minutes) || prayers[0];
-      return currentPrayer;
-    }
-
-    // Show the city input modal if city is not saved
-    function checkCity() {
-      const city = localStorage.getItem('userCity');
-      if (city) {
-        fetchPrayerTimes(city);
-      } else {
-        document.getElementById('cityModal').style.display = 'block';
-      }
-    }
-
-    // Save city in local storage and fetch prayer times
-    function saveCity() {
-      const city = document.getElementById('cityInput').value;
-      if (city) {
-        localStorage.setItem('userCity', city);
-        document.getElementById('cityModal').style.display = 'none';
-        fetchPrayerTimes(city);
-      }
-    }
-
-    // Initialize media and check city on page load
-    window.onload = function() {
-      setMedia();
-      checkCity();
     }
   </script>
 </body>
