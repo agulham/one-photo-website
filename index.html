@@ -68,16 +68,28 @@
       right: 20px;
       cursor: pointer;
     }
+    /* Overlay for Prayer Times */
+    .prayer-times-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
   <div id="content">
-    <img id="mainImage" src="image1.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
+    <img src="images/image1.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
     <audio id="backgroundAudio" loop>
-      <source id="audioSource" src="audio1.mp3" type="audio/mpeg">
+      <source src="audio/audio1.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
-    <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button" width="56" height="56">
+    <img src="assets/play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button" width="56" height="56">
   </div>
   <div class="error-message" id="error">
     <h1>ACCESS RESTRICTED</h1>
@@ -85,65 +97,20 @@
     <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
     <div class="social-icons">
       <a href="https://www.instagram.com/dhikrband" target="_blank">
-        <img src="instagram-icon.png" alt="Instagram">
+        <img src="assets/instagram-icon.png" alt="Instagram">
       </a>
       <a href="https://www.tiktok.com/@dhikrband" target="_blank">
-        <img src="tiktok-icon.png" alt="TikTok">
+        <img src="assets/tiktok-icon.png" alt="TikTok">
       </a>
     </div>
   </div>
+
+  <!-- Prayer Times Overlay -->
+  <div class="prayer-times-overlay" id="prayerTimes">
+    Loading prayer times...
+  </div>
+
   <script>
-    // Array of image filenames (now in PNG format)
-    const images = [
-      'image1.png',
-      'image2.png',
-      'image3.png',
-      'image4.png',
-      'image5.png',
-      'image6.png',
-      'image7.png',
-      'image8.png',
-      'image9.png',
-      'image10.png'
-    ];
-
-    // Array of audio filenames corresponding to the images
-    const audios = [
-      'audio1.mp3',
-      'audio2.mp3',
-      'audio3.mp3',
-      'audio4.mp3',
-      'audio5.mp3',
-      'audio6.mp3',
-      'audio7.mp3',
-      'audio8.mp3',
-      'audio9.mp3',
-      'audio10.mp3'
-    ];
-
-    // Function to get the index of the image and audio to display based on the current date
-    function getMediaIndex() {
-      const now = new Date();
-      const utcHour = now.getUTCHours();
-      const pstHour = utcHour - 8; // PST is UTC-8
-      const dayOffset = pstHour < 3 ? -1 : 0;
-      const today = new Date(now.getTime() + dayOffset * 24 * 60 * 60 * 1000);
-      return today.getDay(); // Returns a number from 0 (Sunday) to 6 (Saturday)
-    }
-
-    // Set the correct image and audio based on the day
-    function setMedia() {
-      const index = getMediaIndex();
-      const imageName = images[index % images.length];
-      const audioName = audios[index % audios.length];
-      document.getElementById('mainImage').src = imageName;
-      document.getElementById('audioSource').src = audioName;
-      document.getElementById('backgroundAudio').load(); // Reload the audio element to update the source
-    }
-
-    // Run the setMedia function to display the correct image and audio
-    setMedia();
-
     // Generate the list of valid tokens (100 to 200)
     const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
 
@@ -176,11 +143,64 @@
       const button = document.querySelector('.audio-button');
       if (audio.paused) {
         audio.play();
-        button.src = 'pause-button.png'; // Change to pause button image
+        button.src = 'assets/pause-button.png'; // Change to pause button image
       } else {
         audio.pause();
-        button.src = 'play-button.png'; // Change to play button image
+        button.src = 'assets/play-button.png'; // Change to play button image
       }
+    }
+
+    // Function to fetch and display prayer times based on user's location
+    function fetchPrayerTimes(latitude, longitude) {
+      const apiURL = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=2`;
+
+      fetch(apiURL)
+        .then(response => response.json())
+        .then(data => {
+          const prayerTimes = data.data.timings;
+          const currentPrayer = getCurrentPrayer(prayerTimes);
+          document.getElementById('prayerTimes').innerHTML = `
+            <strong>${currentPrayer.name}</strong><br>
+            ${currentPrayer.time}
+          `;
+        })
+        .catch(error => {
+          console.error('Error fetching prayer times:', error);
+          document.getElementById('prayerTimes').innerHTML = 'Failed to load prayer times.';
+        });
+    }
+
+    // Function to determine the current prayer
+    function getCurrentPrayer(prayerTimes) {
+      const now = new Date();
+      const currentTime = now.getHours() * 60 + now.getMinutes(); // Convert to minutes
+
+      let currentPrayer = { name: 'Fajr', time: prayerTimes.Fajr };
+
+      for (const [name, time] of Object.entries(prayerTimes)) {
+        const [hours, minutes] = time.split(':').map(Number);
+        const prayerTimeInMinutes = hours * 60 + minutes;
+        if (currentTime >= prayerTimeInMinutes) {
+          currentPrayer = { name, time };
+        } else {
+          break;
+        }
+      }
+
+      return currentPrayer;
+    }
+
+    // Get user's location and fetch prayer times
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        fetchPrayerTimes(position.coords.latitude, position.coords.longitude);
+      }, error => {
+        console.error('Error getting location:', error);
+        document.getElementById('prayerTimes').innerHTML = 'Unable to retrieve location.';
+      });
+    } else {
+      console.error('Geolocation not supported by this browser.');
+      document.getElementById('prayerTimes').innerHTML = 'Geolocation not supported.';
     }
   </script>
 </body>
