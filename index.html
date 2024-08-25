@@ -19,6 +19,49 @@
     #content {
       display: none;
     }
+    .error-message {
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    .error-message h1 {
+      font-size: 2em;
+      margin: 0;
+    }
+    .error-message h2 {
+      color: red;
+      font-size: 1.5em;
+      margin: 0;
+    }
+    .error-message p {
+      font-size: 1em;
+      margin: 0.5em 0;
+    }
+    .social-icons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1em;
+    }
+    .social-icons a {
+      margin: 0.5em;
+    }
+    .social-icons img {
+      width: 40px;
+      height: 40px;
+    }
+    @media (max-width: 600px) {
+      .error-message h1 {
+        font-size: 1.5em;
+      }
+      .error-message p {
+        font-size: 0.9em;
+      }
+      .social-icons img {
+        width: 30px;
+        height: 30px;
+      }
+    }
     .audio-button {
       position: absolute;
       bottom: 20px;
@@ -31,14 +74,27 @@
   <div id="content">
     <img src="wappa.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
     <img id="mainImage" src="image1.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
-    <audio id="backgroundAudio" loop>
-      <source src="015004.mp3" type="audio/mpeg">
+    <audio id="backgroundAudio">
       <source id="audioSource" src="audio1.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
     <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button" width="56" height="56">
   </div>
   
+  <div class="error-message" id="error">
+    <h1>ACCESS RESTRICTED</h1>
+    <h2>SCAN NFC CHIP ON BRACELET TO ENTER</h2>
+    <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
+    <div class="social-icons">
+      <a href="https://www.instagram.com/dhikrband" target="_blank">
+        <img src="instagram-icon.png" alt="Instagram">
+      </a>
+      <a href="https://www.tiktok.com/@dhikrband" target="_blank">
+        <img src="tiktok-icon.png" alt="TikTok">
+      </a>
+    </div>
+  </div>
+
   <script>
     // Array of image filenames (in PNG format)
     const images = [
@@ -109,9 +165,10 @@
     if (validTokens.includes(token)) {
       console.log('Token is valid. Displaying content.');
       document.getElementById('content').style.display = 'flex';
+      document.getElementById('error').style.display = 'none';
     } else {
       console.log('Invalid token or no token. Displaying message.');
-      document.querySelector('.error-message').style.display = 'block';
+      document.getElementById('error').style.display = 'block';
       document.getElementById('content').style.display = 'none';
     }
 
@@ -122,6 +179,9 @@
       if (audio.paused) {
         audio.play();
         button.src = 'pause-button.png'; // Change to pause button image
+        audio.onended = function() {
+          button.src = 'play-button.png'; // Reset to play button image when audio ends
+        };
       } else {
         audio.pause();
         button.src = 'play-button.png'; // Change to play button image
@@ -130,5 +190,3 @@
   </script>
 </body>
 </html>
-
-
