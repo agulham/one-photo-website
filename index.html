@@ -15,68 +15,81 @@
       align-items: center;
       background-color: #000;
       overflow: hidden;
-      position: relative;
     }
     #content {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
+      display: none;
     }
-    #mainImage {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .prayer-times {
       position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
+      bottom: 20px;
+      left: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: Arial, sans-serif;
     }
     .audio-button {
       position: absolute;
       bottom: 20px;
       right: 20px;
       cursor: pointer;
-      z-index: 2;
-      width: 50px;
-      height: 50px;
     }
-    .prayer-times-overlay {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      color: white;
-      background: rgba(0, 0, 0, 0.5);
+    /* Modal styles */
+    #cityModal {
+      display: none; 
+      position: fixed; 
+      z-index: 1; 
+      left: 0;
+      top: 0;
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+      background-color: rgba(0, 0, 0, 0.8); 
+    }
+    #cityModalContent {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 300px;
+      text-align: center;
+    }
+    #cityModalContent input {
+      width: 100%;
       padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
       border-radius: 5px;
-      font-family: Arial, sans-serif;
-      z-index: 2;
     }
-    @media (max-width: 600px) {
-      .audio-button {
-        width: 40px;
-        height: 40px;
-      }
-      .prayer-times-overlay {
-        padding: 8px;
-        font-size: 14px;
-      }
+    #cityModalContent button {
+      padding: 10px 20px;
+      background-color: #000;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
   <div id="content">
-    <img id="mainImage" src="image1.png" alt="A Beautiful Scene">
+    <img src="image1.png" id="mainImage" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
     <audio id="backgroundAudio" loop>
       <source id="audioSource" src="audio1.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
-    <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button">
-    <!-- Prayer Times Overlay -->
-    <div class="prayer-times-overlay" id="prayerTimes">
-      Loading prayer times...
+    <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button" width="56" height="56">
+    <div id="prayerTimes" class="prayer-times"></div>
+  </div>
+
+  <!-- City Input Modal -->
+  <div id="cityModal">
+    <div id="cityModalContent">
+      <h2>Enter Your City</h2>
+      <input type="text" id="cityInput" placeholder="Enter city name">
+      <button onclick="saveCity()">Submit</button>
     </div>
   </div>
 
@@ -129,9 +142,6 @@
       document.getElementById('backgroundAudio').load(); // Reload the audio element to update the source
     }
 
-    // Run the setMedia function to display the correct image and audio
-    setMedia();
-
     // Function to toggle audio playback
     function toggleAudio() {
       const audio = document.getElementById('backgroundAudio');
@@ -145,9 +155,9 @@
       }
     }
 
-    // Function to fetch and display prayer times based on user's location
-    function fetchPrayerTimes(latitude, longitude) {
-      const apiURL = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=2`;
+    // Function to fetch prayer times based on city name
+    function fetchPrayerTimes(city) {
+      const apiURL = `https://api.aladhan.com/v1/timingsByCity?city=${city}&country=&method=2`;
 
       fetch(apiURL)
         .then(response => response.json())
@@ -156,7 +166,7 @@
           const currentPrayer = getCurrentPrayer(prayerTimes);
           document.getElementById('prayerTimes').innerHTML = `
             <strong>${currentPrayer.name}</strong><br>
-            ${currentPrayer.time}
+            ${currentPrayer.time} - ${city}
           `;
         })
         .catch(error => {
@@ -165,38 +175,45 @@
         });
     }
 
-    // Function to determine the current prayer
+    // Get the current prayer based on the current time
     function getCurrentPrayer(prayerTimes) {
       const now = new Date();
-      const currentTime = now.getHours() * 60 + now.getMinutes(); // Convert to minutes
+      const timeNow = now.getHours() * 60 + now.getMinutes();
 
-      let currentPrayer = { name: 'Fajr', time: prayerTimes.Fajr };
+      const prayers = Object.keys(prayerTimes).map(name => ({
+        name,
+        time: prayerTimes[name],
+        minutes: parseInt(prayerTimes[name].split(':')[0]) * 60 + parseInt(prayerTimes[name].split(':')[1])
+      }));
 
-      for (const [name, time] of Object.entries(prayerTimes)) {
-        const [hours, minutes] = time.split(':').map(Number);
-        const prayerTimeInMinutes = hours * 60 + minutes;
-        if (currentTime >= prayerTimeInMinutes) {
-          currentPrayer = { name, time };
-        } else {
-          break;
-        }
-      }
-
+      const currentPrayer = prayers.find(prayer => timeNow < prayer.minutes) || prayers[0];
       return currentPrayer;
     }
 
-    // Request user's location and fetch prayer times
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(position => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        fetchPrayerTimes(latitude, longitude);
-      }, error => {
-        console.error('Error getting location:', error);
-        document.getElementById('prayerTimes').innerHTML = 'Location permission denied.';
-      });
-    } else {
-      document.getElementById('prayerTimes').innerHTML = 'Geolocation is not supported by this browser.';
+    // Show the city input modal if city is not saved
+    function checkCity() {
+      const city = localStorage.getItem('userCity');
+      if (city) {
+        fetchPrayerTimes(city);
+      } else {
+        document.getElementById('cityModal').style.display = 'block';
+      }
+    }
+
+    // Save city in local storage and fetch prayer times
+    function saveCity() {
+      const city = document.getElementById('cityInput').value;
+      if (city) {
+        localStorage.setItem('userCity', city);
+        document.getElementById('cityModal').style.display = 'none';
+        fetchPrayerTimes(city);
+      }
+    }
+
+    // Initialize media and check city on page load
+    window.onload = function() {
+      setMedia();
+      checkCity();
     }
   </script>
 </body>
