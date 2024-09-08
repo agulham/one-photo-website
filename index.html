@@ -138,7 +138,8 @@
 
     // Function to get the index of the image and audio to display based on the current date
     function getMediaIndex() {
-      const startDate = new Date('2024-09-7T03:01:00Z'); // The start date (when day 1 starts)
+      const startDate = new Date(); // Use today's date as the start date
+      startDate.setUTCHours(3, 0, 0, 0); // Set start time to 3:00 AM UTC
       const now = new Date();
       const timeDiff = now.getTime() - startDate.getTime();
       const daysSinceStart = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Calculate the number of days since the start
@@ -204,4 +205,5 @@
   </script>
 </body>
 </html>
+
 
