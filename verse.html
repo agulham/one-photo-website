@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DhikrBand – Verse</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    #content {
+      display: none;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #mainImage {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .error-message {
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      padding: 0 16px;
+    }
+    .error-message h1 {
+      font-size: 2em;
+      margin: 0;
+    }
+    .error-message h2 {
+      color: red;
+      font-size: 1.5em;
+      margin: 0;
+    }
+    .error-message p {
+      font-size: 1em;
+      margin: 0.5em 0;
+    }
+    .social-icons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 1em;
+    }
+    .social-icons a {
+      margin: 0.5em;
+    }
+    .social-icons img {
+      width: 40px;
+      height: 40px;
+    }
+    @media (max-width: 600px) {
+      .error-message h1 {
+        font-size: 1.5em;
+      }
+      .error-message p {
+        font-size: 0.9em;
+      }
+      .social-icons img {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    .audio-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      cursor: pointer;
+      width: 56px;
+      height: 56px;
+    }
+
+    /* Lazy loading effect */
+    img.lazyload {
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    img.lazyload.loaded {
+      opacity: 1;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #f9fafb;
+      border-radius: 999px;
+      border: none;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="content">
+    <!-- Main verse image -->
+    <img
+      id="mainImage"
+      class="lazyload"
+      src="image1.png"
+      alt="Quran verse"
+    >
+
+    <!-- Background audio -->
+    <audio id="backgroundAudio">
+      <source id="audioSource" src="audio1.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <!-- Play / pause button -->
+    <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button">
+
+    <!-- Back to emotion menu -->
+    <button class="back-button" onclick="goBack()">← All feelings</button>
+  </div>
+
+  <!-- Error screen (no / invalid token) -->
+  <div class="error-message" id="error">
+    <h1>ACCESS RESTRICTED</h1>
+    <h2>SCAN NFC CHIP ON BRACELET TO ENTER</h2>
+    <p>FOLLOW OUR INSTAGRAM AND TIKTOK FOR THE LATEST RESTOCK UPDATES</p>
+    <div class="social-icons">
+      <a href="https://www.instagram.com/dhikrband" target="_blank">
+        <img src="instagram-icon.png" alt="Instagram">
+      </a>
+      <a href="https://www.tiktok.com/@dhikrband" target="_blank">
+        <img src="tiktok-icon.png" alt="TikTok">
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // ---------- MEDIA SETUP ----------
+
+    // Base arrays (same as your old index.html)
+    const baseImages = [
+      'image1.png',
+      'image2.png',
+      'image3.png',
+      'image4.png',
+      'image5.png',
+      'image6.png',
+      'image7.png',
+      'image8.png',
+      'image9.png',
+      'image10.png'
+    ];
+
+    const baseAudios = [
+      'audio1.mp3',
+      'audio2.mp3',
+      'audio3.mp3',
+      'audio4.mp3',
+      'audio5.mp3',
+      'audio6.mp3',
+      'audio7.mp3',
+      'audio8.mp3',
+      'audio9.mp3',
+      'audio10.mp3'
+    ];
+
+    // For now, all emotions use the same set.
+    // Later you can customize each emotion with its own arrays.
+    const media = {
+      happy:       { images: baseImages, audios: baseAudios },
+      lonely:      { images: baseImages, audios: baseAudios },
+      thankful:    { images: baseImages, audios: baseAudios },
+      sad:         { images: baseImages, audios: baseAudios },
+      angry:       { images: baseImages, audios: baseAudios },
+      anxious:     { images: baseImages, audios: baseAudios },
+      discouraged: { images: baseImages, audios: baseAudios },
+      troubled:    { images: baseImages, audios: baseAudios }
+    };
+
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    const emotionParam = (getQueryParam('emotion') || 'happy').toLowerCase();
+
+    // Pick today's index based on your original logic
+    function getMediaIndex(length) {
+      const startDate = new Date('2025-05-30T03:00:00Z'); // same anchor as old site
+      const now = new Date();
+      const timeDiff = now.getTime() - startDate.getTime();
+      const daysSinceStart = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      return daysSinceStart % length;
+    }
+
+    function setMediaForEmotion(emotionKey) {
+      const config = media[emotionKey] || media['happy'];
+      const index = getMediaIndex(config.images.length);
+
+      const imageName = config.images[index];
+      const audioName = config.audios[index];
+
+      const mainImage = document.getElementById('mainImage');
+      mainImage.src = imageName;
+      mainImage.onload = () => mainImage.classList.add('loaded');
+
+      document.getElementById('audioSource').src = audioName;
+      document.getElementById('backgroundAudio').load();
+    }
+
+    // ---------- TOKEN CHECK (same as original) ----------
+
+    const validTokens = Array.from({ length: 101 }, (_, i) => (i + 100).toString());
+    const token = getQueryParam('token');
+
+    if (validTokens.includes(token)) {
+      document.getElementById('content').style.display = 'flex';
+      document.getElementById('error').style.display = 'none';
+      setMediaForEmotion(emotionParam);
+    } else {
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('content').style.display = 'none';
+    }
+
+    // ---------- AUDIO TOGGLE ----------
+
+    function toggleAudio() {
+      const audio = document.getElementById('backgroundAudio');
+      const button = document.querySelector('.audio-button');
+      if (audio.paused) {
+        audio.play();
+        button.src = 'pause-button.png';
+        audio.onended = function () {
+          button.src = 'play-button.png';
+        };
+      } else {
+        audio.pause();
+        button.src = 'play-button.png';
+      }
+    }
+
+    // ---------- BACK BUTTON ----------
+
+    function goBack() {
+      // Keep the same token when going back to the menu
+      window.location.href = `index.html?token=${encodeURIComponent(token || '')}`;
+    }
+
+    // expose functions globally
+    window.toggleAudio = toggleAudio;
+    window.goBack = goBack;
+  </script>
+</body>
+</html>
