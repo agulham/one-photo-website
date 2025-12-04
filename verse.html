@@ -81,29 +81,18 @@
       font-size: 0.9rem;
       text-align: center;
       opacity: 0.85;
-      margin-bottom: 12px;
+      margin-bottom: 4px;
     }
 
-    .logo-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 6px;
-    }
-
-    .logo-wrap img {
-      height: 30px;
-      width: auto;
-      cursor: pointer;
-      opacity: 0.95;
-    }
-
+    /* top bar with back button (left) and day pill (right) */
     .top-bar {
       position: absolute;
       top: 12px;
       left: 12px;
       right: 12px;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
       gap: 8px;
     }
 
@@ -121,6 +110,44 @@
 
     .day-pill {
       opacity: 0.9;
+    }
+
+    .back-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .back-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* bottom centered logo */
+    .bottom-logo {
+      position: absolute;
+      bottom: 18px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      pointer-events: none; /* then enable only on img */
+    }
+
+    .bottom-logo img {
+      height: 32px;
+      width: auto;
+      cursor: pointer;
+      opacity: 0.95;
+      pointer-events: auto;
     }
 
     .error-message {
@@ -180,6 +207,9 @@
     <div id="background"></div>
 
     <div class="top-bar">
+      <!-- back button (top-left) -->
+      <button class="back-btn" onclick="goHome()">&#8592;</button>
+      <!-- day info (top-right) -->
       <div class="pill day-pill" id="dayInfo"></div>
     </div>
 
@@ -189,11 +219,12 @@
         <div class="arabic-text" id="arabicText"></div>
         <div class="translation-text" id="translationText"></div>
         <div class="verse-ref" id="verseRef"></div>
-        <div class="logo-wrap">
-          <!-- small logo at bottom; click goes to home -->
-          <img src="dhikrlogo.png" alt="DhikrBand logo" onclick="goHome()">
-        </div>
       </div>
+    </div>
+
+    <!-- bottom logo, outside card -->
+    <div class="bottom-logo">
+      <img src="dhikrlogo.png" alt="DhikrBand logo" onclick="goHome()">
     </div>
   </div>
 
