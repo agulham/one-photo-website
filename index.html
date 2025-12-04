@@ -5,27 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DhikrBand</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #000;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* ---------- EMOTION MENU LAYOUT ---------- */
+
+    #app {
+      display: none; /* shown only when token is valid */
+      height: 100%;
+      width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #000;
+    }
+
+    .app-inner {
+      width: 100%;
+      max-width: 600px;
+      padding: 24px 16px 40px;
+    }
+
+    .title {
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.9rem;
+      line-height: 1.15;
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 4px 16px rgba(0,0,0,0.8);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .emotion-card {
+      border-radius: 18px;
+      padding: 0;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
+      box-shadow:
+        0 10px 0 #000000,
+        0 8px 24px rgba(0,0,0,0.5);
+      transform: translateY(0);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
       overflow: hidden;
     }
-    #content {
-      display: none;
-      position: relative;
+
+    .emotion-card img {
       width: 100%;
       height: 100%;
+      object-fit: cover;
+      display: block;
     }
+
+    /* Background color behind PNG */
+    .happy       { background: #FFD93B; }
+    .lonely      { background: #6E7F91; }
+    .thankful    { background: #FFB86B; }
+    .sad         { background: #4A6FA5; }
+    .angry       { background: #D62828; }
+    .anxious     { background: #465D66; }
+    .discouraged { background: #E86A17; }
+    .troubled    { background: #564660; }
+
+    .emotion-card:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 12px 0 #000000,
+        0 10px 30px rgba(0,0,0,0.7);
+      filter: brightness(1.03);
+    }
+
+    .emotion-card:active {
+      transform: translateY(2px);
+      box-shadow:
+        0 7px 0 #000000,
+        0 4px 18px rgba(0,0,0,0.7);
+      filter: brightness(0.97);
+    }
+
+    @media (max-width: 480px) {
+      .title {
+        font-size: 1.6rem;
+      }
+    }
+
+    /* ---------- ERROR SCREEN ---------- */
+
     .error-message {
+      display: none;
       color: white;
       text-align: center;
       font-family: Arial, sans-serif;
+      padding: 0 16px;
     }
     .error-message h1 {
       font-size: 2em;
@@ -65,34 +159,54 @@
         height: 30px;
       }
     }
-    .audio-button {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      cursor: pointer;
-      width: 56px;
-      height: 56px;
-    }
-    /* Lazy loading of images */
-    img.lazyload {
-      opacity: 0;
-      transition: opacity 0.5s;
-    }
-    img.lazyload.loaded {
-      opacity: 1;
-    }
   </style>
 </head>
 <body>
-  <div id="content">
-    <img id="mainImage" class="lazyload" src="image1.png" alt="A Beautiful Scene" style="width:100%; height:100%; object-fit:cover;">
-    <audio id="backgroundAudio">
-      <source id="audioSource" src="audio1.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
-    <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button">
+
+  <!-- EMOTION MENU -->
+  <div id="app">
+    <div class="app-inner">
+      <div class="title">
+        READ ME WHEN<br>YOU FEEL
+      </div>
+
+      <div class="grid">
+        <button class="emotion-card happy" onclick="goToEmotion('happy')">
+          <img src="happy.png" alt="Happy">
+        </button>
+
+        <button class="emotion-card lonely" onclick="goToEmotion('lonely')">
+          <img src="lonely.png" alt="Lonely">
+        </button>
+
+        <button class="emotion-card thankful" onclick="goToEmotion('thankful')">
+          <img src="thankful.png" alt="Thankful">
+        </button>
+
+        <button class="emotion-card sad" onclick="goToEmotion('sad')">
+          <img src="sad.png" alt="Sad">
+        </button>
+
+        <button class="emotion-card angry" onclick="goToEmotion('angry')">
+          <img src="angry.png" alt="Angry">
+        </button>
+
+        <button class="emotion-card anxious" onclick="goToEmotion('anxious')">
+          <img src="anxious.png" alt="Anxious">
+        </button>
+
+        <button class="emotion-card discouraged" onclick="goToEmotion('discouraged')">
+          <img src="discouraged.png" alt="Discouraged">
+        </button>
+
+        <button class="emotion-card troubled" onclick="goToEmotion('troubled')">
+          <img src="troubled.png" alt="Troubled">
+        </button>
+      </div>
+    </div>
   </div>
 
+  <!-- ERROR / LOCKED SCREEN -->
   <div class="error-message" id="error">
     <h1>ACCESS RESTRICTED</h1>
     <h2>SCAN NFC CHIP ON BRACELET TO ENTER</h2>
@@ -108,98 +222,33 @@
   </div>
 
   <script>
-    // Array of image filenames (in PNG format)
-    const images = [
-      'image1.png',
-      'image2.png',
-      'image3.png',
-      'image4.png',
-      'image5.png',
-      'image6.png',
-      'image7.png',
-      'image8.png',
-      'image9.png',
-      'image10.png'
-    ];
+    // ---------- TOKEN CHECK ----------
+    const validTokens = Array.from({ length: 101 }, (_, i) => (i + 100).toString());
 
-    // Array of audio filenames corresponding to the images
-    const audios = [
-      'audio1.mp3',
-      'audio2.mp3',
-      'audio3.mp3',
-      'audio4.mp3',
-      'audio5.mp3',
-      'audio6.mp3',
-      'audio7.mp3',
-      'audio8.mp3',
-      'audio9.mp3',
-      'audio10.mp3'
-    ];
-
-    // Function to get the index of the image and audio to display based on the current date
-    function getMediaIndex() {
-      const startDate = new Date('2025-05-30T03:00:00Z'); // Start date and time (today at 3 AM UTC)
-      const now = new Date();
-      const timeDiff = now.getTime() - startDate.getTime();
-      const daysSinceStart = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Calculate the number of days since the start
-      return daysSinceStart % images.length; // Ensure the index wraps around after 10 days
-    }
-
-    // Set the correct image and audio based on the day
-    function setMedia() {
-      const index = getMediaIndex();
-      const imageName = images[index];
-      const audioName = audios[index];
-      const mainImage = document.getElementById('mainImage');
-      mainImage.src = imageName;
-      mainImage.onload = () => mainImage.classList.add('loaded'); // Lazy load image
-      document.getElementById('audioSource').src = audioName;
-      document.getElementById('backgroundAudio').load(); // Reload the audio element to update the source
-    }
-
-    // Run the setMedia function to display the correct image and audio
-    setMedia();
-
-    // Generate the list of valid tokens (100 to 200)
-    const validTokens = Array.from({length: 101}, (_, i) => (i + 100).toString());
-
-    // Function to get query parameter by name
     function getQueryParam(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
     }
 
-    // Check for the token
     const token = getQueryParam('token');
-    console.log('JavaScript loaded');
-    console.log('Token:', token);
-    console.log('Valid Tokens:', validTokens);
 
-    // Verify the token
     if (validTokens.includes(token)) {
-      console.log('Token is valid. Displaying content.');
-      document.getElementById('content').style.display = 'flex';
+      // show app, use mainpage.png as full-screen background
+      document.getElementById('app').style.display = 'flex';
       document.getElementById('error').style.display = 'none';
+      document.body.style.backgroundImage = "url('mainpage.png')";
     } else {
-      console.log('Invalid token or no token. Displaying message.');
+      // show error screen, no background image
+      document.getElementById('app').style.display = 'none';
       document.getElementById('error').style.display = 'block';
-      document.getElementById('content').style.display = 'none';
+      document.body.style.backgroundImage = 'none';
+      document.body.style.backgroundColor = '#000';
     }
 
-    // Function to toggle audio playback
-    function toggleAudio() {
-      const audio = document.getElementById('backgroundAudio');
-      const button = document.querySelector('.audio-button');
-      if (audio.paused) {
-        audio.play();
-        button.src = 'pause-button.png'; // Change to pause button image
-        audio.onended = function() {
-          button.src = 'play-button.png'; // Reset to play button image when audio ends
-        };
-      } else {
-        audio.pause();
-        button.src = 'play-button.png'; // Change to play button image
-      }
+    // ---------- NAVIGATION TO VERSE PAGE ----------
+    function goToEmotion(emotion) {
+      if (!validTokens.includes(token)) return;
+      window.location.href = `verse.html?emotion=${encodeURIComponent(emotion)}&token=${encodeURIComponent(token)}`;
     }
   </script>
 </body>
