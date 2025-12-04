@@ -3,35 +3,128 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DhikrBand – Verse</title>
+  <title>DhikrBand – Daily Verse</title>
   <style>
+    * { box-sizing: border-box; }
+
     body, html {
       margin: 0;
       padding: 0;
       height: 100%;
       width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background-color: #000;
       overflow: hidden;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     #content {
       display: none;
       position: relative;
-      width: 100%;
       height: 100%;
+      width: 100%;
     }
 
-    #mainImage {
+    #background {
+      position: absolute;
+      inset: 0;
+      background-position: center;
+      background-size: cover;  /* fill full phone screen */
+      background-repeat: no-repeat;
+      filter: brightness(0.7);
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      max-width: 700px;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 24px;
+      padding: 24px 20px 18px;
+      color: #e5e7eb;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+    }
+
+    .emotion-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-bottom: 10px;
+    }
+
+    .arabic-text {
+      font-size: 1.6rem;
+      line-height: 2.1rem;
+      text-align: center;
+      direction: rtl;
+      margin-bottom: 14px;
+    }
+
+    .translation-text {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      text-align: center;
+      margin-bottom: 8px;
+      white-space: pre-line;
+    }
+
+    .verse-ref {
+      font-size: 0.9rem;
+      text-align: center;
+      opacity: 0.85;
+      margin-bottom: 12px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .logo-wrap img {
+      height: 30px;
+      width: auto;
+      cursor: pointer;
+      opacity: 0.95;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .pill {
+      background: rgba(15, 23, 42, 0.95);
+      color: #e5e7eb;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .day-pill {
+      opacity: 0.9;
     }
 
     .error-message {
+      display: none;
       color: white;
       text-align: center;
       font-family: Arial, sans-serif;
@@ -64,74 +157,46 @@
       height: 40px;
     }
     @media (max-width: 600px) {
-      .error-message h1 {
-        font-size: 1.5em;
+      .card {
+        padding: 18px 16px 14px;
+        border-radius: 18px;
       }
-      .error-message p {
-        font-size: 0.9em;
+      .arabic-text {
+        font-size: 1.4rem;
+        line-height: 1.9rem;
+      }
+      .translation-text {
+        font-size: 0.98rem;
       }
       .social-icons img {
         width: 30px;
         height: 30px;
       }
     }
-
-    .audio-button {
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      cursor: pointer;
-      width: 56px;
-      height: 56px;
-    }
-
-    /* Lazy loading effect */
-    img.lazyload {
-      opacity: 0;
-      transition: opacity 0.5s;
-    }
-    img.lazyload.loaded {
-      opacity: 1;
-    }
-
-    .back-button {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: rgba(0, 0, 0, 0.6);
-      color: #f9fafb;
-      border-radius: 999px;
-      border: none;
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
   <div id="content">
-    <!-- Main verse image -->
-    <img
-      id="mainImage"
-      class="lazyload"
-      src="image1.png"
-      alt="Quran verse"
-    >
+    <div id="background"></div>
 
-    <!-- Background audio -->
-    <audio id="backgroundAudio">
-      <source id="audioSource" src="audio1.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
+    <div class="top-bar">
+      <div class="pill day-pill" id="dayInfo"></div>
+    </div>
 
-    <!-- Play / pause button -->
-    <img src="play-button.png" class="audio-button" onclick="toggleAudio()" alt="Play Button">
-
-    <!-- Back to emotion menu -->
-    <button class="back-button" onclick="goBack()">← All feelings</button>
+    <div id="overlay">
+      <div class="card">
+        <div class="emotion-label" id="emotionLabel"></div>
+        <div class="arabic-text" id="arabicText"></div>
+        <div class="translation-text" id="translationText"></div>
+        <div class="verse-ref" id="verseRef"></div>
+        <div class="logo-wrap">
+          <!-- small logo at bottom; click goes to home -->
+          <img src="dhikrlogo.png" alt="DhikrBand logo" onclick="goHome()">
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Error screen (no / invalid token) -->
   <div class="error-message" id="error">
     <h1>ACCESS RESTRICTED</h1>
     <h2>SCAN NFC CHIP ON BRACELET TO ENTER</h2>
@@ -147,120 +212,306 @@
   </div>
 
   <script>
-    // ---------- MEDIA SETUP ----------
+    /* ------------ CONFIG: BACKGROUNDS + VERSES ------------ */
 
-    // Base arrays (same as your old index.html)
-    const baseImages = [
-      'image1.png',
-      'image2.png',
-      'image3.png',
-      'image4.png',
-      'image5.png',
-      'image6.png',
-      'image7.png',
-      'image8.png',
-      'image9.png',
-      'image10.png'
-    ];
+    // 26 JPG background images: bg1.jpg ... bg26.jpg
+    const backgrounds = Array.from({ length: 26 }, (_, i) => `bg${i + 1}.jpg`);
 
-    const baseAudios = [
-      'audio1.mp3',
-      'audio2.mp3',
-      'audio3.mp3',
-      'audio4.mp3',
-      'audio5.mp3',
-      'audio6.mp3',
-      'audio7.mp3',
-      'audio8.mp3',
-      'audio9.mp3',
-      'audio10.mp3'
-    ];
+    // Verses from your document, grouped by emotion
+    const verses = {
+      happy: [
+        {
+          arabic: "قل بفضل الله وبرحمته فبذلك فليفرحوا هو خير مما يجمعون",
+          translation: "Say, “In the bounty of Allah and His mercy – in that let them rejoice; it is better than all that they accumulate.”",
+          ref: "Yunus 10:58"
+        },
+        {
+          arabic: "ولسوف يعطيك ربك فترضى",
+          translation: "And your Lord is going to give you, and you will be satisfied.",
+          ref: "Ad-Duha 93:5"
+        },
+        {
+          arabic: "من عمل صالحا من ذكر او انثى وهو مؤمن فلنحيينه حياة طيبة ولنجزينهم اجرهم باحسن ما كانوا يعملون",
+          translation: "Whoever does righteousness, whether male or female, while a believer – We will surely give them a good life and reward them according to the best of what they used to do.",
+          ref: "An-Nahl 16:97"
+        },
+        {
+          arabic: "الا ان اولياء الله لا خوف عليهم ولا هم يحزنون",
+          translation: "Unquestionably, the close friends of Allah will have no fear, nor will they grieve.",
+          ref: "Yunus 10:62"
+        },
+        {
+          arabic: "وبشر الذين امنوا وعملوا الصالحات ان لهم جنات تجري من تحتها الانهار",
+          translation: "And give good news to those who believe and do righteous deeds that they will have gardens beneath which rivers flow.",
+          ref: "Al-Baqarah 2:25"
+        }
+      ],
 
-    // For now, all emotions use the same set.
-    // Later you can customize each emotion with its own arrays.
-    const media = {
-      happy:       { images: baseImages, audios: baseAudios },
-      lonely:      { images: baseImages, audios: baseAudios },
-      thankful:    { images: baseImages, audios: baseAudios },
-      sad:         { images: baseImages, audios: baseAudios },
-      angry:       { images: baseImages, audios: baseAudios },
-      anxious:     { images: baseImages, audios: baseAudios },
-      discouraged: { images: baseImages, audios: baseAudios },
-      troubled:    { images: baseImages, audios: baseAudios }
+      lonely: [
+        {
+          arabic: "واذا سالك عبادي عني فاني قريب اجيب دعوة الداع اذا دعان",
+          translation: "And when My servants ask you about Me – indeed I am near. I respond to the call of the caller when he calls upon Me.",
+          ref: "Al-Baqarah 2:186"
+        },
+        {
+          arabic: "وهو معكم اين ما كنتم والله بما تعملون بصير",
+          translation: "And He is with you wherever you are, and Allah sees all that you do.",
+          ref: "Al-Hadid 57:4"
+        },
+        {
+          arabic: "اذ يقول لصاحبه لا تحزن ان الله معنا",
+          translation: "When he said to his companion, “Do not grieve; indeed Allah is with us.”",
+          ref: "At-Tawbah 9:40"
+        },
+        {
+          arabic: "ما ودعك ربك وما قلى",
+          translation: "Your Lord has not left you, nor has He detested you.",
+          ref: "Ad-Duha 93:3"
+        },
+        {
+          arabic: "قال لا تخافا انني معكما اسمع وارى",
+          translation: "He said, “Do not fear; indeed, I am with you both – I hear and I see.”",
+          ref: "Ta Ha 20:46"
+        }
+      ],
+
+      thankful: [
+        {
+          arabic: "واذ تأذن ربكم لئن شكرتم لازيدنكم ولئن كفرتم ان عذابي لشديد",
+          translation: "And when your Lord proclaimed, “If you are grateful, I will surely increase you; but if you are ungrateful, My punishment is severe.”",
+          ref: "Ibrahim 14:7"
+        },
+        {
+          arabic: "فاذكروني اذكركم واشكروا لي ولا تكفرون",
+          translation: "So remember Me; I will remember you. Be grateful to Me and do not be ungrateful.",
+          ref: "Al-Baqarah 2:152"
+        },
+        {
+          arabic: "ولقد اتينا لقمان الحكمة ان اشكر لله ومن يشكر فانما يشكر لنفسه ومن كفر فان الله غني حميد",
+          translation: "And We certainly gave Luqman wisdom, “Be grateful to Allah.” Whoever is grateful is grateful only for his own soul, and whoever is ungrateful – indeed, Allah is Free of need, Praiseworthy.",
+          ref: "Luqman 31:12"
+        },
+        {
+          arabic: "فكلوا مما رزقكم الله حلالا طيبا واشكروا نعمة الله ان كنتم اياه تعبدون",
+          translation: "So eat of what Allah has provided for you, lawful and good, and be grateful for the favor of Allah, if it is Him that you worship.",
+          ref: "An-Nahl 16:114"
+        },
+        {
+          arabic: "بل الله فاعبد وكن من الشاكرين",
+          translation: "Rather, worship Allah alone and be among the grateful.",
+          ref: "Az-Zumar 39:66"
+        }
+      ],
+
+      sad: [
+        {
+          arabic: "ولا تهنوا ولا تحزنوا وانتم الاعلون ان كنتم مؤمنين",
+          translation: "So do not lose heart and do not grieve, for you will be superior if you are believers.",
+          ref: "Ali Imran 3:139"
+        },
+        {
+          arabic: "انما اشكو بثي وحزني الى الله واعلم من الله ما لا تعلمون",
+          translation: "He said, “I only complain of my suffering and my grief to Allah, and I know from Allah that which you do not know.”",
+          ref: "Yusuf 12:86"
+        },
+        {
+          arabic: "الذين امنوا وتطمئن قلوبهم بذكر الله الا بذكر الله تطمئن القلوب",
+          translation: "Those who believe and whose hearts find rest in the remembrance of Allah – truly, in the remembrance of Allah do hearts find rest.",
+          ref: "Ar-Ra'd 13:28"
+        },
+        {
+          arabic: "اذ يقول لصاحبه لا تحزن ان الله معنا",
+          translation: "When he said to his companion, “Do not grieve; indeed Allah is with us.”",
+          ref: "At-Tawbah 9:40"
+        },
+        {
+          arabic: "لا يكلف الله نفسا الا وسعها",
+          translation: "Allah does not burden any soul beyond what it can bear.",
+          ref: "Al-Baqarah 2:286"
+        }
+      ],
+
+      angry: [
+        {
+          arabic: "والذين ينفقون في السراء والضراء والكاظمين الغيظ والعافين عن الناس والله يحب المحسنين",
+          translation: "Those who spend in ease and in hardship, and who restrain anger and pardon people – and Allah loves the doers of good.",
+          ref: "Ali Imran 3:134"
+        },
+        {
+          arabic: "والذين يجتنبون كبائر الاثم والفواحش واذا ما غضبوا هم يغفرون",
+          translation: "And those who avoid major sins and immoralities, and when they are angered, they forgive.",
+          ref: "Ash-Shura 42:37"
+        },
+        {
+          arabic: "خذ العفو وامر بالعرف واعرض عن الجاهلين",
+          translation: "Show forgiveness, enjoin what is right, and turn away from the ignorant.",
+          ref: "Al-A'raf 7:199"
+        },
+        {
+          arabic: "ادفع بالتي هي احسن فإذا الذي بينك وبينه عداوة كانه ولي حميم",
+          translation: "Repel evil with that which is better; then the one between you and him is enmity will become as though he were a devoted friend.",
+          ref: "Fussilat 41:34"
+        },
+        {
+          arabic: "فبما رحمة من الله لنت لهم ولو كنت فظا غليظ القلب لانفضوا من حولك فاعف عنهم واستغفر لهم",
+          translation: "So by mercy from Allah, you were gentle with them. If you had been harsh and hard-hearted, they would have dispersed from around you. So pardon them and seek forgiveness for them.",
+          ref: "Ali Imran 3:159"
+        }
+      ],
+
+      anxious: [
+        {
+          arabic: "قل لن يصيبنا الا ما كتب الله لنا هو مولانا وعلى الله فليتوكل المؤمنون",
+          translation: "Say, “Nothing will ever befall us except what Allah has decreed for us; He is our Protector.” And upon Allah let the believers rely.",
+          ref: "At-Tawbah 9:51"
+        },
+        {
+          arabic: "ومن يتوكل على الله فهو حسبه ان الله بالغ امره قد جعل الله لكل شيء قدرا",
+          translation: "And whoever relies upon Allah – He is sufficient for him. Allah will accomplish His purpose. Allah has set a measure for all things.",
+          ref: "At-Talaq 65:3"
+        },
+        {
+          arabic: "الذين قال لهم الناس ان الناس قد جمعوا لكم فاخشوهم فزادهم ايمانا وقالوا حسبنا الله ونعم الوكيل",
+          translation: "Those to whom people said, “Indeed the people have gathered against you, so fear them,” but it only increased them in faith and they said, “Allah is sufficient for us, and He is the best disposer of affairs.”",
+          ref: "Ali Imran 3:173"
+        },
+        {
+          arabic: "وتوكل على الله وكفى بالله وكيلا",
+          translation: "And rely upon Allah; and sufficient is Allah as Disposer of affairs.",
+          ref: "Al-Ahzab 33:3"
+        },
+        {
+          arabic: "اليس الله بكاف عبده",
+          translation: "Is not Allah sufficient for His servant?",
+          ref: "Az-Zumar 39:36"
+        }
+      ],
+
+      discouraged: [
+        {
+          arabic: "فان مع العسر يسرا",
+          translation: "For indeed, with hardship comes ease.",
+          ref: "Ash-Sharh 94:5"
+        },
+        {
+          arabic: "ان مع العسر يسرا",
+          translation: "Indeed, with hardship comes ease.",
+          ref: "Ash-Sharh 94:6"
+        },
+        {
+          arabic: "والذين جاهدوا فينا لنهدينهم سبلنا وان الله لمع المحسنين",
+          translation: "And those who strive for Us – We will surely guide them to Our ways. Indeed, Allah is with the doers of good.",
+          ref: "Al-Ankabut 29:69"
+        },
+        {
+          arabic: "يا ايها الذين امنوا اصبروا وصابروا ورابطوا واتقوا الله لعلكم تفلحون",
+          translation: "O you who have believed, be patient, endure, remain stationed, and fear Allah so that you may succeed.",
+          ref: "Ali Imran 3:200"
+        },
+        {
+          arabic: "انما يوفى الصابرون اجرهم بغير حساب",
+          translation: "Indeed, the patient will be given their reward without measure.",
+          ref: "Az-Zumar 39:10"
+        }
+      ],
+
+      troubled: [
+        {
+          arabic: "يا ايها الذين امنوا استعينوا بالصبر والصلاة ان الله مع الصابرين",
+          translation: "O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient.",
+          ref: "Al-Baqarah 2:153"
+        },
+        {
+          arabic: "امن يجيب المضطر اذا دعاه ويكشف السوء ويجعلكم خلفاء الارض",
+          translation: "Is He [not best] who responds to the distressed one when he calls upon Him, removes evil, and makes you inheritors of the earth?",
+          ref: "An-Naml 27:62"
+        },
+        {
+          arabic: "لا اله الا انت سبحانك اني كنت من الظالمين",
+          translation: "“There is no deity except You; exalted are You. Indeed, I have been of the wrongdoers.”",
+          ref: "Al-Anbiya 21:87"
+        },
+        {
+          arabic: "واستعينوا بالصبر والصلاة وانها لكبيرة الا على الخاشعين",
+          translation: "And seek help through patience and prayer; and indeed, it is difficult except for the humbly submissive.",
+          ref: "Al-Baqarah 2:45"
+        },
+        {
+          arabic: "وقال ربكم ادعوني استجب لكم",
+          translation: "And your Lord says, “Call upon Me; I will respond to you.”",
+          ref: "Ghafir 40:60"
+        }
+      ]
     };
+
+    /* ---------------- HELPER FUNCTIONS ---------------- */
 
     function getQueryParam(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
     }
 
-    const emotionParam = (getQueryParam('emotion') || 'happy').toLowerCase();
-
-    // Pick today's index based on your original logic
-    function getMediaIndex(length) {
-      const startDate = new Date('2025-05-30T03:00:00Z'); // same anchor as old site
-      const now = new Date();
-      const timeDiff = now.getTime() - startDate.getTime();
-      const daysSinceStart = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-      return daysSinceStart % length;
-    }
-
-    function setMediaForEmotion(emotionKey) {
-      const config = media[emotionKey] || media['happy'];
-      const index = getMediaIndex(config.images.length);
-
-      const imageName = config.images[index];
-      const audioName = config.audios[index];
-
-      const mainImage = document.getElementById('mainImage');
-      mainImage.src = imageName;
-      mainImage.onload = () => mainImage.classList.add('loaded');
-
-      document.getElementById('audioSource').src = audioName;
-      document.getElementById('backgroundAudio').load();
-    }
-
-    // ---------- TOKEN CHECK (same as original) ----------
-
     const validTokens = Array.from({ length: 101 }, (_, i) => (i + 100).toString());
     const token = getQueryParam('token');
+    const emotionParam = (getQueryParam('emotion') || 'happy').toLowerCase();
 
-    if (validTokens.includes(token)) {
-      document.getElementById('content').style.display = 'flex';
-      document.getElementById('error').style.display = 'none';
-      setMediaForEmotion(emotionParam);
-    } else {
-      document.getElementById('error').style.display = 'block';
-      document.getElementById('content').style.display = 'none';
+    function getDayIndex(length) {
+      const startDate = new Date('2025-05-30T03:00:00Z'); // anchor date
+      const now = new Date();
+      const diff = now.getTime() - startDate.getTime();
+      const daysSinceStart = Math.floor(diff / (1000 * 60 * 60 * 24));
+      return (daysSinceStart % length + length) % length;
     }
 
-    // ---------- AUDIO TOGGLE ----------
+    function pickRandomBackground() {
+      if (backgrounds.length === 0) return null;
+      const idx = Math.floor(Math.random() * backgrounds.length);
+      return backgrounds[idx];
+    }
 
-    function toggleAudio() {
-      const audio = document.getElementById('backgroundAudio');
-      const button = document.querySelector('.audio-button');
-      if (audio.paused) {
-        audio.play();
-        button.src = 'pause-button.png';
-        audio.onended = function () {
-          button.src = 'play-button.png';
-        };
-      } else {
-        audio.pause();
-        button.src = 'play-button.png';
+    /* ---------------- MAIN RENDER ---------------- */
+
+    function renderPage() {
+      if (!validTokens.includes(token)) {
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+        return;
       }
+
+      const emotionVerses = verses[emotionParam];
+      if (!emotionVerses || emotionVerses.length === 0) {
+        document.getElementById('content').style.display = 'none';
+        const error = document.getElementById('error');
+        error.style.display = 'block';
+        error.innerHTML = "<h1>No verses configured yet</h1><p>Add verses for this emotion inside verse.html.</p>";
+        return;
+      }
+
+      const idx = getDayIndex(emotionVerses.length);
+      const verse = emotionVerses[idx];
+
+      document.getElementById('emotionLabel').textContent = emotionParam.toUpperCase();
+      document.getElementById('arabicText').textContent = verse.arabic || "";
+      document.getElementById('translationText').textContent = verse.translation || "";
+      document.getElementById('verseRef').textContent = verse.ref || "";
+      document.getElementById('dayInfo').textContent =
+        `Day ${idx + 1} · Verse ${idx + 1} of ${emotionVerses.length}`;
+
+      const bgFile = pickRandomBackground();
+      if (bgFile) {
+        document.getElementById('background').style.backgroundImage = `url(${bgFile})`;
+      }
+
+      document.getElementById('content').style.display = 'block';
+      document.getElementById('error').style.display = 'none';
     }
 
-    // ---------- BACK BUTTON ----------
-
-    function goBack() {
-      // Keep the same token when going back to the menu
-      window.location.href = `index.html?token=${encodeURIComponent(token || '')}`;
+    function goHome() {
+      window.location.href = `index.html?token=${encodeURIComponent(token || "")}`;
     }
 
-    // expose functions globally
-    window.toggleAudio = toggleAudio;
-    window.goBack = goBack;
+    window.goHome = goHome;
+    renderPage();
   </script>
 </body>
 </html>
